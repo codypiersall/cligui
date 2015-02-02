@@ -1,6 +1,7 @@
 """Make a gui from a command line interface."""
 import argparse
 import tkinter as tk
+from collections import OrderedDict
 
 
 class Frame(tk.Frame):
@@ -13,6 +14,11 @@ class Frame(tk.Frame):
 class Widget(object):
     """A bridge between the GUI and the command line argument."""
     def __init__(self, action, parent):
+        """
+        :param argparse.Action action:
+        :param tk.Frame parent:
+        :return:
+        """
 
         if type(self) is Widget:
            _widgetmap[type(action)](action, parent)
@@ -93,7 +99,6 @@ class _StoreWidget(Widget):
 
     def getval(self):
         textval = self._entry.get()
-        print(textval)
         if self.action.type:
             return self.action.type(textval)
         else:
@@ -145,7 +150,7 @@ _widgetmap = {argparse._StoreAction: _StoreWidget,
 
 
 class CliGui(object):
-    def __init__(self, parser, onrun=None):
+    def __init__(self, parser, onrun=None, show=True):
         """
 
         :param argparse.ArgumentParser parser: parser to turn into a gui
@@ -154,25 +159,36 @@ class CliGui(object):
         """
         self.parser = parser
         self.onrun = onrun
+        self.widgets = OrderedDict()
         self.make_gui()
+        if show:
+            self.show()
 
     def make_gui(self):
         self.root = tk.Tk()
         self.frame = Frame(self.root)
         for action in self.parser._actions:
-            self.add_action(action)
+            self.widgets[action] = self.add_action(action)
 
+        # add run and cancel buttons to the bottom.
         buttonframes = tk.Frame(self.frame)
         self.run = tk.Button(buttonframes, text='Run',
-                            command=self.check_args)
+                            command=self.parse_args)
         self.cancel = tk.Button(buttonframes, text='Cancel',
                                 command=self.quit)
         self.run.pack(side=tk.LEFT)
         self.cancel.pack(side=tk.LEFT)
         buttonframes.pack()
 
-    def check_args(self):
-        print('checked out yo')
+    def parse_args(self):
+        ns = argparse.Namespace()
+        for widget in self.widgets:
+            if isinstance(widget.action, argparse._HelpAction):
+                continue
+            val = widget.getval()
+            setattr(ns, widget.action.dest, val)
+
+        return ns
 
     def quit(self):
         self.frame.parent.quit()
@@ -187,6 +203,7 @@ class CliGui(object):
         :return: None
         """
         widget = Widget(action, self.frame)
+        return widget
 
 
     def parse_args(self):
