@@ -15,7 +15,7 @@ class Widget(object):
     def __init__(self, action, parent):
 
         if type(self) is Widget:
-           _bridgemap[type(action)](action, parent)
+           _widgetmap[type(action)](action, parent)
         else:
             self.action = action
             self.frame = tk.Frame(parent)
@@ -134,7 +134,7 @@ class _StoreTrueWidget(Widget):
         pass
 
 
-_bridgemap = {argparse._StoreAction: _StoreWidget,
+_widgetmap = {argparse._StoreAction: _StoreWidget,
               argparse._AppendAction: _AppendWidget,
               argparse._AppendConstAction: _AppendConstWidget,
               argparse._CountAction: _CountWidget,
