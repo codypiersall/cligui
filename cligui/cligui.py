@@ -13,7 +13,13 @@ class Frame(tk.Frame):
 class Widget(object):
     """A bridge between the GUI and the command line argument."""
     def __init__(self, action, parent):
-        _bridgemap[type(action)](action, parent)
+
+        if type(self) is Widget:
+           _bridgemap[type(action)](action, parent)
+        else:
+            self.action = action
+            self.frame = tk.Frame(parent)
+            self.frame.pack(side=tk.TOP)
 
 
 class _AppendWidget(Widget):
@@ -23,6 +29,7 @@ class _AppendWidget(Widget):
         :param argparse.Action action:
         :return:
         """
+        super().__init__(action, parent)
 
     def getval(self):
         pass
@@ -35,6 +42,7 @@ class _AppendConstWidget(Widget):
         :param argparse.Action action:
         :return:
         """
+        super().__init__(action, parent)
 
     def getval(self):
         pass
@@ -47,6 +55,7 @@ class _CountWidget(Widget):
         :param argparse.Action action:
         :return:
         """
+        super().__init__(action, parent)
 
     def getval(self):
         pass
@@ -60,7 +69,7 @@ class _HelpWidget(Widget):
         :param argparse.Action action:
         :return:
         """
-        self.frame = tk.Frame()
+        super().__init__(action, parent)
 
     def getval(self):
         pass
@@ -72,15 +81,15 @@ class _StoreWidget(Widget):
         :param argparse.Action action:
         :return:
         """
-        self.action = action
+        super().__init__(action, parent)
 
-        self.frame = tk.Frame(parent)
-        self.frame.pack(side=tk.TOP)
         text = action.dest + '*:' if action.required else ':'
-        self._label = tk.Label(self.frame, text=text, anchor=tk.E, width=20)
+        self._label = tk.Label(self.frame, text=text, anchor=tk.E, width=10)
         self._label.pack(side=tk.LEFT)
         self._entry = tk.Entry(self.frame, width=30)
         self._entry.pack(side=tk.LEFT)
+        self._help = tk.Label(self.frame, text=action.help, anchor=tk.W, width=10)
+        self._help.pack(side=tk.LEFT)
 
     def getval(self):
         textval = self._entry.get()
@@ -136,12 +145,15 @@ _bridgemap = {argparse._StoreAction: _StoreWidget,
 
 
 class CliGui(object):
-    def __init__(self, parser, run=None):
+    def __init__(self, parser, onrun=None):
         """
 
         :param argparse.ArgumentParser parser: parser to turn into a gui
+        :param callable run: callable to run when the run button is pressed.
+          The callable must take an argparse.Namespace as its only argument.
         """
         self.parser = parser
+        self.onrun = onrun
         self.make_gui()
 
     def make_gui(self):
