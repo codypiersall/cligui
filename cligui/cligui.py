@@ -89,13 +89,15 @@ class _StoreWidget(Widget):
         """
         super().__init__(action, parent)
 
-        text = action.dest + '*:' if action.required else ':'
+        text = action.dest + ('*:' if action.required else ':')
         self._label = tk.Label(self.frame, text=text, anchor=tk.E, width=10)
         self._label.pack(side=tk.LEFT)
         self._entry = tk.Entry(self.frame, width=30)
         self._entry.pack(side=tk.LEFT)
-        self._help = tk.Label(self.frame, text=action.help, anchor=tk.W, width=10)
+        self._help = tk.Label(self.frame, text=action.help, anchor=tk.W, width=30)
         self._help.pack(side=tk.LEFT)
+        if action.default:
+            self._entry.insert(0, str(action.default))
 
     def getval(self):
         textval = self._entry.get()
@@ -187,6 +189,7 @@ class CliGui(object):
                 continue
             val = widget.getval()
             setattr(ns, widget.action.dest, val)
+        print('parsing')
 
         return ns
 
