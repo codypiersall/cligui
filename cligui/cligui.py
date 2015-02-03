@@ -24,6 +24,15 @@ class Widget(object):
         self.frame = tk.Frame(parent)
         self.frame.pack(side=tk.TOP)
 
+    def _dolabel(self):
+        text = self.action.dest + ('*:' if self.action.required else ':')
+        self._label = tk.Label(self.frame, text=text, anchor=tk.E, width=10)
+        self._label.pack(side=tk.LEFT)
+
+    def _dohelp(self):
+        self._help = tk.Label(self.frame, text=self.action.help, anchor=tk.W, width=30)
+        self._help.pack(side=tk.LEFT)
+
 
 class _AppendWidget(Widget):
 
@@ -85,14 +94,10 @@ class _StoreWidget(Widget):
         :return:
         """
         super().__init__(action, parent)
-
-        text = action.dest + ('*:' if action.required else ':')
-        self._label = tk.Label(self.frame, text=text, anchor=tk.E, width=10)
-        self._label.pack(side=tk.LEFT)
+        self._dolabel()
         self._entry = tk.Entry(self.frame, width=30)
         self._entry.pack(side=tk.LEFT)
-        self._help = tk.Label(self.frame, text=action.help, anchor=tk.W, width=30)
-        self._help.pack(side=tk.LEFT)
+        self._dohelp()
         if action.default:
             self._entry.insert(0, str(action.default))
 
@@ -122,6 +127,7 @@ class _StoreFalseWidget(Widget):
         :return:
         """
 
+
     def getval(self):
         pass
 
@@ -132,10 +138,15 @@ class _StoreTrueWidget(Widget):
         :param argparse.Action action:
         :return:
         """
-        self.frame = tk.Frame(parent)
+        super().__init__(action, parent)
+        self._dolabel()
+        self.state = tk.IntVar()
+        self.cb = tk.Checkbutton(self.frame, width=30, anchor=tk.W, variable=self.state)
+        self.cb.pack(side=tk.LEFT)
+        self._dohelp()
 
     def getval(self):
-        pass
+        return self.state.get()
 
 
 _widgetmap = {argparse._StoreAction: _StoreWidget,
