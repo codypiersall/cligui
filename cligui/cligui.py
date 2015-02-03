@@ -20,12 +20,9 @@ class Widget(object):
         :return:
         """
 
-        if type(self) is Widget:
-           _widgetmap[type(action)](action, parent)
-        else:
-            self.action = action
-            self.frame = tk.Frame(parent)
-            self.frame.pack(side=tk.TOP)
+        self.action = action
+        self.frame = tk.Frame(parent)
+        self.frame.pack(side=tk.TOP)
 
 
 class _AppendWidget(Widget):
@@ -184,8 +181,8 @@ class CliGui(object):
 
     def parse_args(self):
         ns = argparse.Namespace()
-        for widget in self.widgets:
-            if isinstance(widget.action, argparse._HelpAction):
+        for action, widget in self.widgets.items():
+            if isinstance(widget, _HelpWidget):
                 continue
             val = widget.getval()
             setattr(ns, widget.action.dest, val)
@@ -205,10 +202,6 @@ class CliGui(object):
         :param argparse.Action action:
         :return: None
         """
-        widget = Widget(action, self.frame)
+        widget = _widgetmap[type(action)](action, self.frame)
         return widget
-
-
-    def parse_args(self):
-        return self.show()
 
