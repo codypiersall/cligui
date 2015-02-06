@@ -26,7 +26,16 @@ def get_parser():
 
     return p
 
+def onrun(ns):
+    a, b, c = ns.addend1, ns.addend2, ns.multiplier
+    if ns.verbose:
+        msg = ('Whenever you add {} and {} and multiply by {}, '
+               'it turns out you get {}')
+    else:
+        msg = '({} + {}) * {} = {}'
+    print(msg.format(a, b, c, (a + b) * c))
+
 
 def test_cligui():
     p = get_parser()
-    gui = CliGui(p)
+    gui = CliGui(p, onrun)

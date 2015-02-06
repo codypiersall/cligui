@@ -1,15 +1,17 @@
 """Make a gui from a command line interface."""
 import argparse
 import tkinter as tk
+import threading
+from .stdoutwrapper import Wrapper
+import time
 from collections import OrderedDict
 
 
 class Frame(tk.Frame):
-    def __init__(self, parent):
-        super().__init__(parent)
+    def __init__(self, parent, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
         self.parent = parent
         self.pack(fill=tk.BOTH, expand=True)
-
 
 class Widget(object):
     """A bridge between the GUI and the command line argument."""
@@ -142,7 +144,7 @@ class _StoreTrueWidget(Widget):
         super().__init__(action, parent)
         self._dolabel()
         self.state = tk.IntVar()
-        self.cb = tk.Checkbutton(self.frame, width=30, anchor=tk.W, variable=self.state)
+        self.cb = tk.Checkbutton(self.frame, width=30, anchor=tk.E, variable=self.state)
         self.cb.pack(side=tk.LEFT)
         self._dohelp()
 
@@ -172,6 +174,7 @@ class CliGui(object):
         self.onrun = onrun
         self.widgets = OrderedDict()
         self.make_gui()
+        self.stdout = Wrapper(self.onwrite)
         if show:
             self.show()
 
@@ -190,6 +193,16 @@ class CliGui(object):
         self.run.pack(side=tk.LEFT)
         self.cancel.pack(side=tk.LEFT)
         buttonframes.pack()
+        self.stdoutframe = Frame(self.frame)
+
+        self.entry = tk.Text(self.stdoutframe)
+        self.entry.configure(state='disabled')
+        self.entry.pack(fill=tk.BOTH)
+
+    def onwrite(self, text):
+        self.entry.configure(state='normal')
+        self.entry.insert(tk.INSERT, text)
+        self.entry.configure(state='disabled')
 
     def parse_args(self):
         ns = argparse.Namespace()
@@ -198,8 +211,9 @@ class CliGui(object):
                 continue
             val = widget.getval()
             setattr(ns, widget.action.dest, val)
-        print('parsing')
 
+        if self.onrun:
+            self.onrun(ns)
         return ns
 
     def quit(self):
@@ -216,4 +230,3 @@ class CliGui(object):
         """
         widget = _widgetmap[type(action)](action, self.frame)
         return widget
-
