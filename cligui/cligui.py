@@ -201,7 +201,7 @@ class CliGui(object):
 
     def onwrite(self, text):
         self.entry.configure(state='normal')
-        self.entry.insert(tk.INSERT, text)
+        self.entry.insert(tk.END, text)
         self.entry.configure(state='disabled')
 
     def parse_args(self):
