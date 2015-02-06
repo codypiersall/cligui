@@ -115,6 +115,7 @@ class _StoreConstWidget(Widget):
         :param argparse.Action action:
         :return:
         """
+        super().__init__(action, parent)
 
     def getval(self):
         pass
@@ -126,7 +127,7 @@ class _StoreFalseWidget(Widget):
         :param argparse.Action action:
         :return:
         """
-
+        super().__init__(action, parent)
 
     def getval(self):
         pass
