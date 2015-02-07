@@ -1,9 +1,7 @@
 """Make a gui from a command line interface."""
 import argparse
 import tkinter as tk
-import threading
 from .stdoutwrapper import Wrapper
-import time
 from collections import OrderedDict
 
 
@@ -11,7 +9,8 @@ class Frame(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.parent = parent
-        self.pack(fill=tk.BOTH, expand=True)
+        self.pack(fill=tk.BOTH, expand=True, pady=3)
+
 
 class Widget(object):
     """A bridge between the GUI and the command line argument."""
@@ -23,7 +22,7 @@ class Widget(object):
         """
 
         self.action = action
-        self.frame = tk.Frame(parent)
+        self.frame = Frame(parent)
         self.frame.pack(side=tk.TOP)
 
     def _dolabel(self):
@@ -144,7 +143,7 @@ class _StoreTrueWidget(Widget):
         super().__init__(action, parent)
         self._dolabel()
         self.state = tk.IntVar()
-        self.cb = tk.Checkbutton(self.frame, width=30, anchor=tk.E, variable=self.state)
+        self.cb = tk.Checkbutton(self.frame, width=30, anchor=tk.W, variable=self.state)
         self.cb.pack(side=tk.LEFT)
         self._dohelp()
 
@@ -163,12 +162,16 @@ _widgetmap = {argparse._StoreAction: _StoreWidget,
 
 
 class CliGui(object):
-    def __init__(self, parser, onrun=None, show=True):
+    """Turn a command line script into a GUI.  It's pretty ugly, but effective."""
+    def __init__(self,
+                 parser, onrun, show=True):
         """
-
         :param argparse.ArgumentParser parser: parser to turn into a gui
-        :param callable run: callable to run when the run button is pressed.
+
+        :param callable onrun: callable to run when the run button is pressed.
           The callable must take an argparse.Namespace as its only argument.
+        :param bool show: Whether to show the GUI by default.  The only use case
+          for this to be False is for testing.
         """
         self.parser = parser
         self.onrun = onrun
@@ -184,8 +187,8 @@ class CliGui(object):
         for action in self.parser._actions:
             self.widgets[action] = self.add_action(action)
 
-        # add run and cancel buttons to the bottom.
-        buttonframes = tk.Frame(self.frame)
+        # add run and cancel buttons.
+        buttonframes = Frame(self.frame)
         self.run = tk.Button(buttonframes, text='Run',
                             command=self.parse_args)
         self.cancel = tk.Button(buttonframes, text='Cancel',
@@ -193,6 +196,8 @@ class CliGui(object):
         self.run.pack(side=tk.LEFT)
         self.cancel.pack(side=tk.LEFT)
         buttonframes.pack()
+
+        # add stdout wrapper
         self.stdoutframe = Frame(self.frame)
 
         self.entry = tk.Text(self.stdoutframe)
@@ -214,6 +219,8 @@ class CliGui(object):
 
         if self.onrun:
             self.onrun(ns)
+            print('-' * 25)
+            print()
         return ns
 
     def quit(self):
