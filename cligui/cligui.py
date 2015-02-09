@@ -142,18 +142,6 @@ class _StoreConstWidget(Widget):
         pass
 
 
-class _StoreFalseWidget(Widget):
-    def __init__(self, action, parent):
-        """
-        :param argparse.Action action:
-        :return:
-        """
-        super().__init__(action, parent)
-
-    def getval(self):
-        pass
-
-
 class _StoreTrueWidget(Widget):
     def __init__(self, action, parent):
         """
@@ -169,6 +157,20 @@ class _StoreTrueWidget(Widget):
 
     def getval(self):
         return self.state.get()
+
+
+class _StoreFalseWidget(_StoreTrueWidget):
+    def __init__(self, action, parent):
+        """
+        :param argparse.Action action:
+        :return:
+        """
+        super().__init__(action, parent)
+        self.cb.select()
+
+    def getval(self):
+        pass
+
 
 
 _widgetmap = {argparse._StoreAction: _StoreWidget,

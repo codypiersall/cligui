@@ -30,6 +30,11 @@ def get_parser():
                    action='store_true',
                    default=False)
 
+    p.add_argument('-q', '--quiet',
+                   help="Doesn't actually do anything :-(",
+                   action='store_false',
+                   default=True)
+
     return p
 
 ops = {'+': operator.add,
