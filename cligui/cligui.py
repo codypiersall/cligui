@@ -1,19 +1,28 @@
 """Make a gui from a command line interface."""
 import argparse
 import tkinter as tk
+from tkinter import ttk
 from .stdoutwrapper import Wrapper
 from collections import OrderedDict
 
 
 class Frame(tk.Frame):
+    """A Frame with some cool defaults. (that can be overwridden)"""
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
+        fill = kwargs.get('fill', tk.BOTH)
+        expand = kwargs.get('expand', True)
+        pady = kwargs.get('pady', 3)
         self.parent = parent
-        self.pack(fill=tk.BOTH, expand=True, pady=3)
+        self.pack(fill=fill, expand=expand, pady=pady)
 
 
 class Widget(object):
     """A bridge between the GUI and the command line argument."""
+
+    # The entry for a thing.
+    ENTRY_WIDTH = 30
+
     def __init__(self, action, parent):
         """
         :param argparse.Action action:
@@ -24,6 +33,7 @@ class Widget(object):
         self.action = action
         self.frame = Frame(parent)
         self.frame.pack(side=tk.TOP)
+        self.__class__ = _widgetmap[type(action)]
 
     def _dolabel(self):
         text = self.action.dest + ('*:' if self.action.required else ':')
@@ -69,6 +79,8 @@ class _CountWidget(Widget):
         :return:
         """
         super().__init__(action, parent)
+        self._dolabel()
+        tk.Listbox(self.frame, width=self.ENTRY_WIDTH)
 
     def getval(self):
         pass
@@ -96,11 +108,19 @@ class _StoreWidget(Widget):
         """
         super().__init__(action, parent)
         self._dolabel()
-        self._entry = tk.Entry(self.frame, width=30)
-        self._entry.pack(side=tk.LEFT)
+        if action.choices:
+            self._entry = ttk.Combobox(self.frame, state='readonly', width=self.ENTRY_WIDTH)
+            self._entry['values'] = action.choices
+            self._entry.pack(side=tk.LEFT)
+            if action.default and action.default in action.choices:
+                self._entry.current(action.choices.index(action.default))
+
+        else:
+            self._entry = tk.Entry(self.frame, width=self.ENTRY_WIDTH)
+            self._entry.pack(side=tk.LEFT)
+            if action.default:
+                self._entry.insert(0, str(action.default))
         self._dohelp()
-        if action.default:
-            self._entry.insert(0, str(action.default))
 
     def getval(self):
         textval = self._entry.get()
@@ -188,7 +208,7 @@ class CliGui(object):
             self.widgets[action] = self.add_action(action)
 
         # add run and cancel buttons.
-        buttonframes = Frame(self.frame)
+        buttonframes = tk.Frame(self.frame)
         self.run = tk.Button(buttonframes, text='Run',
                             command=self.parse_args)
         self.cancel = tk.Button(buttonframes, text='Cancel',

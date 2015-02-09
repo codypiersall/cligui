@@ -1,6 +1,7 @@
 """Tests for command line interface gui."""
 from cligui import CliGui
 import argparse
+import operator
 
 
 def get_parser():
@@ -19,6 +20,11 @@ def get_parser():
                    type=float,
                    default=1)
 
+    p.add_argument('-o', '--operator',
+                   help='Which operator should you use for your numbers there?',
+                   choices=('+', '-', '*', '/', '**'),
+                   default='+')
+
     p.add_argument('-v', '--verbose',
                    help='Increase verbosity',
                    action='store_true',
@@ -26,14 +32,22 @@ def get_parser():
 
     return p
 
+ops = {'+': operator.add,
+       '-': operator.sub,
+       '*': operator.mul,
+       '/': operator.truediv,
+       '**': operator.pow}
+
 def onrun(ns):
     a, b, c = ns.addend1, ns.addend2, ns.multiplier
+    op = ops[ns.operator]
+    res = op(a, b) * c
     if ns.verbose:
         msg = ('Whenever you add {} and {} and multiply by {}, '
                'it turns out you get {}')
     else:
-        msg = '({} + {}) * {} = {}'
-    print(msg.format(a, b, c, (a + b) * c))
+        msg = '({} {} {}) * {} = {}'
+    print(msg.format(a, ns.operator, b, c, res))
 
 
 def test_cligui():
