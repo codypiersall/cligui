@@ -79,4 +79,5 @@ TODO
   script normally.  That could be useful.
 * Write a setup.py script.  Come on, self.
 
-
+[argparse]: https://docs.python.org/3/library/argparse.html
+[Gooey]: https://github.com/chriskiehl/Gooey/
