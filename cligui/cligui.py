@@ -53,6 +53,7 @@ class _AppendWidget(Widget):
         :return:
         """
         super().__init__(action, parent)
+        raise NotImplementedError('{} has not been implemented.'.format(self.__class__))
 
     def getval(self):
         pass
@@ -66,6 +67,7 @@ class _AppendConstWidget(Widget):
         :return:
         """
         super().__init__(action, parent)
+        raise NotImplementedError('{} has not been implemented.'.format(self.__class__))
 
     def getval(self):
         pass
@@ -79,8 +81,7 @@ class _CountWidget(Widget):
         :return:
         """
         super().__init__(action, parent)
-        self._dolabel()
-        tk.Listbox(self.frame, width=self.ENTRY_WIDTH)
+        raise NotImplementedError('{} has not been implemented.'.format(self.__class__))
 
     def getval(self):
         pass
@@ -137,6 +138,7 @@ class _StoreConstWidget(Widget):
         :return:
         """
         super().__init__(action, parent)
+        raise NotImplementedError('{} has not been implemented.'.format(self.__class__))
 
     def getval(self):
         pass

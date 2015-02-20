@@ -35,6 +35,16 @@ def get_parser():
                    action='store_false',
                    default=True)
 
+    formatting = p.add_argument_group('formatting')
+
+    formatting.add_argument('-c', '--color',
+                            help='The color for outputting text.',
+                            choices='red green blue yellow'.split())
+
+    formatting.add_argument('-f', '--font',
+                            help='What font should the output be?',
+                            choices='Times Helvetica'.split())
+
     return p
 
 ops = {'+': operator.add,
