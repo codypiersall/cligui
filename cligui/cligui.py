@@ -31,8 +31,8 @@ class Widget(object):
         """
 
         self.action = action
-        self.frame = Frame(parent)
-        self.frame.pack(side=tk.TOP)
+        self.frame = tk.Frame(parent)
+        self.frame.pack(fill=tk.X, expand=True, side=tk.TOP)
         self.__class__ = _widgetmap[type(action)]
 
     def _dolabel(self):
@@ -110,15 +110,15 @@ class _StoreWidget(Widget):
         super().__init__(action, parent)
         self._dolabel()
         if action.choices:
-            self._entry = ttk.Combobox(self.frame, state='readonly', width=self.ENTRY_WIDTH)
+            self._entry = ttk.Combobox(self.frame, state='readonly')
             self._entry['values'] = action.choices
-            self._entry.pack(side=tk.LEFT)
+            self._entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
             if action.default and action.default in action.choices:
                 self._entry.current(action.choices.index(action.default))
 
         else:
-            self._entry = tk.Entry(self.frame, width=self.ENTRY_WIDTH)
-            self._entry.pack(side=tk.LEFT)
+            self._entry = tk.Entry(self.frame)
+            self._entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
             if action.default:
                 self._entry.insert(0, str(action.default))
         self._dohelp()
@@ -152,8 +152,8 @@ class _StoreBoolWidget(Widget):
         super().__init__(action, parent)
         self._dolabel()
         self.state = tk.IntVar()
-        self.cb = tk.Checkbutton(self.frame, width=30, anchor=tk.W, variable=self.state)
-        self.cb.pack(side=tk.LEFT)
+        self.cb = tk.Checkbutton(self.frame, anchor=tk.W, variable=self.state)
+        self.cb.pack(side=tk.LEFT, fill=tk.X, expand=True)
         self._dohelp()
 
     def getval(self):
@@ -218,8 +218,10 @@ class CliGui(object):
         self.frame = Frame(self.root)
         self.groupframes = []
         for group in self.parser._action_groups:
-            frame = Frame(self.frame)
+            frame = Frame(self.frame, borderwidth=10)
             self.groupframes.append(frame)
+            group_label = tk.Label(frame, text=group.title)
+            group_label.pack(fill=tk.X)
             for action in group._group_actions:
                 self.widgets[action] = self.add_action(action, frame)
 
