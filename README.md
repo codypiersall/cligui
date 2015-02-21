@@ -14,6 +14,7 @@ this pattern: make a function to return a parser, make a function that takes an
 argparse.Namespace instance (what you get back after calling `parse_args` on an
 ArgumentParser instance), and make a main function to call them both.
 
+    # Does not make a GUI appear.  How tragic!
     import argparse
 
     def get_parser():
@@ -31,22 +32,21 @@ ArgumentParser instance), and make a main function to call them both.
         """
 
     def main():
+        """This decent function makes NO GUI APPEAR.  How mundane!"""
         p = get_parser()
         args = p.parse_args()
         do_the_best_things(args)
 
 
 To adjust this program to use cligui, you don't have to do much.  You have to
-import cligui, of course, so the top of the file will look like this:
+import cligui, of course, so add this line at the top of the file:
 
-    import argparse
     import cligui
-
-    def get_parser():
 
 And the new `main` function will look like this:
 
 def main():
+    """This incredible function will make a GUI appear.  Remarkable!"""
     p = get_parser()
     # call cligui.CliGui with the parser, and a function that takes an
     # argparse.Namespace as its argument.
