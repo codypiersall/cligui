@@ -53,7 +53,14 @@ ops = {'+': operator.add,
        '/': operator.truediv,
        '**': operator.pow}
 
+
 def onrun(ns):
+    """
+    Take the namespace and do magic with it.
+    :param argparse.Namespace ns: a namespace
+
+    :return None: doesn't do anything.
+    """
     a, b, c = ns.addend1, ns.addend2, ns.multiplier
     op = ops[ns.operator]
     res = op(a, b) * c
