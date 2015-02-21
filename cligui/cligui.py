@@ -216,8 +216,12 @@ class CliGui(object):
     def make_gui(self):
         self.root = tk.Tk()
         self.frame = Frame(self.root)
-        for action in self.parser._actions:
-            self.widgets[action] = self.add_action(action)
+        self.groupframes = []
+        for group in self.parser._action_groups:
+            frame = Frame(self.frame)
+            self.groupframes.append(frame)
+            for action in group._group_actions:
+                self.widgets[action] = self.add_action(action, frame)
 
         # add run and cancel buttons.
         buttonframes = tk.Frame(self.frame)
@@ -262,10 +266,10 @@ class CliGui(object):
         self.root.geometry('600x400+300+300')
         self.root.mainloop()
 
-    def add_action(self, action):
+    def add_action(self, action, frame):
         """
         :param argparse.Action action:
         :return: None
         """
-        widget = _widgetmap[type(action)](action, self.frame)
+        widget = _widgetmap[type(action)](action, frame)
         return widget
