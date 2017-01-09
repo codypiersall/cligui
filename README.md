@@ -45,12 +45,12 @@ import cligui, of course, so add this line at the top of the file:
 
 And the new `main` function will look like this:
 
-def main():
-    """This incredible function will make a GUI appear.  Remarkable!"""
-    p = get_parser()
-    # call cligui.CliGui with the parser, and a function that takes an
-    # argparse.Namespace as its argument.
-    cligui.CliGui(p, do_the_best_things)
+    def main():
+        """This incredible function will make a GUI appear.  Remarkable!"""
+        p = get_parser()
+        # call cligui.CliGui with the parser, and a function that takes an
+        # argparse.Namespace as its argument.
+        cligui.CliGui(p, do_the_best_things)
 
 That's it!  Now when the script is called, a Gui will pop up and it will be
 incredible.
