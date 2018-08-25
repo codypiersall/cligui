@@ -2,9 +2,13 @@ cligui
 ======
 
 Turn an [argparse] command line interface into a GUI.  This is a very early
-version, so nothing is considered stable yet and it only works on a
-not-very-large subset of what is available to argparse.  This version can turn
-really simple scripts into GUIs already, but much work needs to be done.
+version, and it only works on a not-very-large subset of what is available to
+argparse.  This version can turn really simple scripts into GUIs already, but
+much work needs to be done.  And alas, my interest in this faded, so I am not
+planning on doing the work.
+
+Check out [Gooey], which has a better name, is more mature, and creates a
+(much) better looking user interface.
 
 Usage
 -----
@@ -92,13 +96,6 @@ Requirements
 
 The only requirement is Python 3.x and tkinter, which comes with most Python
 distributions.
-
-This has only been tested on Python 3.4.  It should work with any Python 3.x,
-but it will not work with Python 2.x.  It wouldn't be much work to make it
-compatible, so if that becomes worthwhile at some point I may do it.  It does
-not depend on any third-party packages.  If you're stuck using an older Python,
-you might want to check out [Gooey], which has a better name, is more mature,
-and creates a better-looking GUI.  It uses wxPython, and it looks really sleek.
 
 TODO
 ----
